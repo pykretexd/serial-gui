@@ -240,7 +240,7 @@ if __name__ == "__main__":
 
     ser = serial.Serial(
             port='/dev/pts/0'
-        )
+    )
 
     thread = threading.Thread(target=worker)
     thread.setDaemon(True)
