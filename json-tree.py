@@ -223,7 +223,6 @@ class JsonModel(QAbstractItemModel):
         else:
             return item.value
 
-
 def worker():
     while ser.isOpen():
         packet = str(ser.readline().decode('utf-8')).strip()
@@ -238,9 +237,7 @@ if __name__ == "__main__":
 
     view.setModel(model)
 
-    ser = serial.Serial(
-            port='/dev/pts/0'
-    )
+    ser = serial.Serial(port='/dev/pts/0')
 
     thread = threading.Thread(target=worker)
     thread.setDaemon(True)
