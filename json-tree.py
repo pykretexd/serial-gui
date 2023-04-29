@@ -1,4 +1,5 @@
 import json
+import serial
 import sys
 import random
 import time
@@ -7,16 +8,6 @@ from typing import Any, Iterable, List, Dict, Union
 
 from PySide6.QtWidgets import QTreeView, QApplication, QHeaderView
 from PySide6.QtCore import QAbstractItemModel, QModelIndex, QObject, Qt, QFileInfo
-
-def worker():
-    while True:
-        k = random.randint(0, 1)
-        if k == 0:
-            document = json.loads('{"abc":"blabla", "ffdfdf":"dsdsds"}')
-        else:
-            document = json.loads('{"a":"b", "f":"d"}')
-        model.load(document)
-        time.sleep(0.5)
 
 class TreeItem:
     def __init__(self, parent: "TreeItem" = None):
@@ -233,12 +224,23 @@ class JsonModel(QAbstractItemModel):
             return item.value
 
 
+def worker():
+    while ser.isOpen():
+        packet = str(ser.readline().decode('utf-8')).strip()
+        json_file = json.loads(packet)
+
+        time.sleep(0.5)
+
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     view = QTreeView()
     model = JsonModel()
 
     view.setModel(model)
+
+    ser = serial.Serial(
+            port='/dev/pts/0'
+        )
 
     thread = threading.Thread(target=worker)
     thread.setDaemon(True)
