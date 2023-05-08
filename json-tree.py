@@ -227,8 +227,10 @@ def worker():
     while ser.isOpen():
         packet = str(ser.readline().decode('utf-8')).strip()
         json_file = json.loads(packet)
+        
+        model.load(json_file)
 
-        time.sleep(0.5)
+        time.sleep(0.1)
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
@@ -237,7 +239,7 @@ if __name__ == "__main__":
 
     view.setModel(model)
 
-    ser = serial.Serial(port='/dev/pts/0')
+    ser = serial.Serial('/dev/pts/0')
 
     thread = threading.Thread(target=worker)
     thread.setDaemon(True)
