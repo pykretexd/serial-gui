@@ -225,10 +225,27 @@ class JsonModel(QAbstractItemModel):
 
 def worker():
     while ser.isOpen():
-        packet = str(ser.readline().decode('utf-8')).strip()
-        json_file = json.loads(packet)
-        
-        model.load(json_file)
+        stack = []
+        is_recieving = False
+        while ser.isOpen():
+            byte = ser.read().decode('utf-8').strip()
+            
+            if byte:
+                if byte == '{':
+                    is_recieving = True
+                    stack.append(byte)
+                elif byte == '}' and is_recieving == True:
+                    stack.append(byte)
+                    is_recieving = False
+                    
+                    json_file = json.loads(''.join(stack))
+                    model.load(json_file)
+                    
+                    stack = []
+                elif is_recieving == True:
+                    stack.append(byte)
+                elif is_recieving == False:
+                    print('discarding', byte)
 
         time.sleep(0.1)
 
